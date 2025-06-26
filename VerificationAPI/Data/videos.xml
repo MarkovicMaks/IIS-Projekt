@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfVideoMetadata xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <VideoMetadata>
+    <url>https://www.tiktok.com/@yeuphimzz/video/7237370304337628442</url>
+    <source>tiktok</source>
+    <id>7237370304337628442</id>
+    <unique_id>yeuphimzz</unique_id>
+    <author>yeuphimzz</author>
+    <title>Shin godzilla #movie #yeuphimzz</title>
+    <thumbnail>https://p16-sign-useast2a.tiktokcdn.com/tos-useast2a-p-0037-aiso/332c65066a374d1ba6c5c56c6f95746d_1685081677~tplv-tiktokx-origin.image?dr=1364&amp;refresh_token=c46efef5&amp;x-expires=1751014800&amp;x-signature=auxvCEQlrv%2Bnn2DJEbhkAWba0lk%3D&amp;t=bacd0480&amp;ps=4f5296ae&amp;shp=d05b14bd&amp;shcp=1d1a97fc&amp;idc=my&amp;biz_tag=tt_video&amp;s=AWEME_DETAIL&amp;sc=dynamic_cover</thumbnail>
+    <duration>88447</duration>
+    <medias>
+      <media>
+        <url>https://v16-perf.tiktokcdn.com/fcd769212ef1dbcd94c1c03e26bebdc7/685e6483/video/tos/useast2a/tos-useast2a-ve-0068-euttp/ogJ1e5PprEGeLitqf1HAKqEALA6geBpu4I2paQ/?a=1233&amp;bti=OTg7QGo5QHM6OjZALTAzYCMvcCMxNDNg&amp;ch=0&amp;cr=13&amp;dr=0&amp;er=0&amp;lr=all&amp;net=0&amp;cd=0%7C0%7C0%7C&amp;cv=1&amp;br=964&amp;bt=482&amp;cs=2&amp;ds=3&amp;ft=EKpu4dZzI02R12NvOSDCWIxRBdlvu3_45SY&amp;mime_type=video_mp4&amp;qs=14&amp;rc=NGhnaTRmOjVoNjw8ODZmO0Bpam1xZDs6Zm83azMzZjgzM0BeLTM0L18uNS4xYl5gLV5jYSNeYl40cjRfbmxgLS1kL2Nzcw%3D%3D&amp;vvpl=1&amp;l=2025062609281065EFDE61A10EFFE3EFF2&amp;btag=e00090000</url>
+        <data_size>5466143</data_size>
+        <quality>hd_no_watermark</quality>
+        <extension>mp4</extension>
+        <type>video</type>
+        <duration xsi:nil="true" />
+      </media>
+      <media>
+        <url>https://v16-perf.tiktokcdn.com/b7de6c740c466fe4b39b92e1c47d6a52/685e6483/video/tos/useast2a/tos-useast2a-pve-0037-aiso/oMOyvAaVKAFIQK9PoIfVOTnzqtpT3lChhBAdwE/?a=1233&amp;bti=OTg7QGo5QHM6OjZALTAzYCMvcCMxNDNg&amp;ch=0&amp;cr=13&amp;dr=0&amp;er=0&amp;lr=all&amp;net=0&amp;cd=0%7C0%7C0%7C&amp;cv=1&amp;br=1868&amp;bt=934&amp;cs=0&amp;ds=6&amp;ft=EKpu4dZzI02R12NvOSDCWIxRBdlvu3_45SY&amp;mime_type=video_mp4&amp;qs=0&amp;rc=ZmU8ZTpkOmk8ZzxoNTg3NUBpam1xZDs6Zm83azMzZjgzM0AxXmFeNF8zNTExLi80YGBeYSNeYl40cjRfbmxgLS1kL2Nzcw%3D%3D&amp;vvpl=1&amp;l=2025062609281065EFDE61A10EFFE3EFF2&amp;btag=e00090000</url>
+        <data_size>10575474</data_size>
+        <quality>no_watermark</quality>
+        <extension>mp4</extension>
+        <type>video</type>
+        <duration xsi:nil="true" />
+      </media>
+      <media>
+        <url>https://v16-perf.tiktokcdn.com/39cf31068e538966e50819cc472765df/685e6483/video/tos/useast2a/tos-useast2a-pve-0037-aiso/ooOyqSaVKAZIQKKGoIfVOTnzqtpT3lChhBANwE/?a=1233&amp;bti=OTg7QGo5QHM6OjZALTAzYCMvcCMxNDNg&amp;ch=0&amp;cr=13&amp;dr=0&amp;er=0&amp;lr=all&amp;net=0&amp;cd=0%7C0%7C0%7C&amp;cv=1&amp;br=1924&amp;bt=962&amp;cs=0&amp;ds=3&amp;ft=EKpu4dZzI02R12NvOSDCWIxRBdlvu3_45SY&amp;mime_type=video_mp4&amp;qs=0&amp;rc=NTg4O2U3NjVpO2ZlZGllN0Bpam1xZDs6Zm83azMzZjgzM0BfNi02YTIyNmIxNjZeYi5jYSNeYl40cjRfbmxgLS1kL2Nzcw%3D%3D&amp;vvpl=1&amp;l=2025062609281065EFDE61A10EFFE3EFF2&amp;btag=e00090000</url>
+        <data_size>10899158</data_size>
+        <quality>watermark</quality>
+        <extension>mp4</extension>
+        <type>video</type>
+        <duration xsi:nil="true" />
+      </media>
+      <media>
+        <url>https://v16m.tiktokcdn.com/69956604f54dde5e2b5c5707cfc89ae5/68664ddb/video/tos/useast2a/tos-useast2a-v-27dcd7-aiso/oonAOYhBVC6zaqMhQBWElltcKchfwThyoIjMzI/?a=1233&amp;bti=OTg7QGo5QHM6OjZALTAzYCMvcCMxNDNg&amp;ch=0&amp;cr=0&amp;dr=0&amp;er=0&amp;lr=default&amp;cd=0%7C0%7C0%7C0&amp;br=250&amp;bt=125&amp;ft=.NpOcInz7Th2vnDKXq8Zmo&amp;mime_type=audio_mpeg&amp;qs=6&amp;rc=MzU0aWc7Zjg6Njo3PGU5PEBpanZlO2Y6Zmw3azMzZjU8M0BeLTQwY15fNS0xNTBeY2AyYSNlM2NpcjRvcGxgLS1kMWNzcw%3D%3D&amp;vvpl=1&amp;l=2025062609281065EFDE61A10EFFE3EFF2&amp;btag=e00090000&amp;cc=3&amp;shp=d05b14bd&amp;shcp=-</url>
+        <data_size>0</data_size>
+        <quality>audio</quality>
+        <extension>mp3</extension>
+        <type>audio</type>
+        <duration>88</duration>
+      </media>
+    </medias>
+    <type>multiple</type>
+    <error>false</error>
+    <time_end>242</time_end>
+  </VideoMetadata>
+  <VideoMetadata>
+    <url>https://example.com</url>
+    <source>tiktok</source>
+    <id>123456789</id>
+    <unique_id>tester</unique_id>
+    <author>GodzillaFan</author>
+    <title>Godzilla Movie Trailer</title>
+    <thumbnail>https://example.com/thumbnail.jpg</thumbnail>
+    <duration>90000</duration>
+    <medias>
+      <media>
+        <url>https://example.com/video.mp4</url>
+        <data_size>1234567</data_size>
+        <quality>hd</quality>
+        <extension>mp4</extension>
+        <type>video</type>
+        <duration xsi:nil="true" />
+      </media>
+    </medias>
+    <type>single</type>
+    <error>false</error>
+    <time_end>120</time_end>
+  </VideoMetadata>
+  <VideoMetadata>
+    <url>https://example.com</url>
+    <source>tiktok</source>
+    <id>123456789</id>
+    <unique_id>tester</unique_id>
+    <author>GodzillaFan</author>
+    <title>Godzilla Movie Trailer</title>
+    <thumbnail>https://example.com/thumbnail.jpg</thumbnail>
+    <duration>90000</duration>
+    <medias>
+      <media>
+        <url>https://example.com/video.mp4</url>
+        <data_size>1234567</data_size>
+        <quality>hd</quality>
+        <extension>mp4</extension>
+        <type>video</type>
+        <duration xsi:nil="true" />
+      </media>
+    </medias>
+    <type>single</type>
+    <error>false</error>
+    <time_end>120</time_end>
+  </VideoMetadata>
+</ArrayOfVideoMetadata>

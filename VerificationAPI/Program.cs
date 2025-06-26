@@ -1,5 +1,7 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using CoreWCF.Configuration;
+using Microsoft.OpenApi.Models;
 using VerificationAPI.Services;
+using VerificationAPI.Services.SoapContracts;
 using VerificationAPI.XmlModels;
 
 namespace VerificationAPI
@@ -17,6 +19,10 @@ namespace VerificationAPI
             builder.Services.AddSingleton(new XmlValidationService(xsdPath));
             builder.Services.AddSingleton<List<VideoMetadata>>();
             builder.Services.AddSingleton<List<string>>();
+
+            //Soap stuf
+            builder.Services.AddSingleton<SearchService>();          
+            builder.Services.AddServiceModelServices();             
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -51,6 +57,19 @@ namespace VerificationAPI
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Verification API v1");
+            });
+
+            app.UseServiceModel(builder =>
+            {
+                builder
+                    .AddService<VerificationAPI.Services.SoapContracts.SearchService>()
+                    .AddServiceEndpoint<
+                        VerificationAPI.Services.SoapContracts.SearchService,
+                        VerificationAPI.Services.SoapContracts.ISearchService
+                    >(
+                        new CoreWCF.BasicHttpBinding(),
+                        "/soap/search"
+                    );
             });
 
             app.MapControllers();

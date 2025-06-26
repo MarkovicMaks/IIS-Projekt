@@ -22,7 +22,11 @@ namespace VerificationAPI.Controllers
             _store = store;
             _log = log;
         }
-
+        [HttpGet("all")]
+        public ActionResult<List<VideoMetadata>> GetAll()
+        {
+            return Ok(_store);
+        }
         // POST /api/xmlvalidation/import
         [HttpPost("import")]
         [Consumes("application/xml")]                           // Swagger shows xml
