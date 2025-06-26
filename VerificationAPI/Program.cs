@@ -11,7 +11,8 @@ namespace VerificationAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
+            var rngPath = Path.Combine(builder.Environment.ContentRootPath, "Schemas", "MetadataRNG.rng");
+            builder.Services.AddSingleton(new RngValidationService(rngPath));
             var xsdPath = Path.Combine(builder.Environment.ContentRootPath, "Schemas", "MetadataXSD.xsd");
             builder.Services.AddSingleton(new XmlValidationService(xsdPath));
             builder.Services.AddSingleton<List<VideoMetadata>>();
@@ -27,6 +28,13 @@ namespace VerificationAPI
                     Description = "Import TikTok JSON → XML → XSD validate"
                 });
             });
+            builder.Services.AddCors(o =>
+            {
+                o.AddPolicy("AllowVue", p => p
+                    .WithOrigins("http://localhost:5173")   // Vite dev server
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
+            });
 
             builder.Services.AddControllers(opt =>
                             {
@@ -35,7 +43,7 @@ namespace VerificationAPI
                             .AddXmlSerializerFormatters();
 
             var app = builder.Build();
-
+            app.UseCors("AllowVue");
             // Configure the HTTP request pipeline.
 
             //app.UseAuthorization();

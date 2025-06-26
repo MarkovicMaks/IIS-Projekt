@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+	<start>
+		<element name="item">
+			<group>
+				<element name="url">
+					<text/>
+				</element>
+				<element name="source">
+					<text/>
+				</element>
+				<element name="id">
+					<data type="integer"/>
+				</element>
+				<element name="unique_id">
+					<text/>
+				</element>
+				<element name="author">
+					<text/>
+				</element>
+				<element name="title">
+					<text/>
+				</element>
+				<element name="thumbnail">
+					<text/>
+				</element>
+				<element name="duration">
+					<data type="integer"/>
+				</element>
+
+				<element name="medias">
+					<zeroOrMore>
+						<!-- One <media> rendition -->
+						<element name="media">
+							<group>
+								<element name="url">
+									<text/>
+								</element>
+
+								<!-- data_size optional -->
+								<optional>
+									<element name="data_size">
+										<data type="integer"/>
+									</element>
+								</optional>
+
+								<!-- duration optional BEFORE quality/extension/type -->
+								<optional>
+									<element name="duration">
+										<data type="integer"/>
+									</element>
+								</optional>
+
+								<element name="quality">
+									<text/>
+								</element>
+								<element name="extension">
+									<text/>
+								</element>
+								<element name="type">
+									<text/>
+								</element>
+							</group>
+						</element>
+					</zeroOrMore>
+				</element>
+
+				<element name="type">
+					<text/>
+				</element>
+				<element name="error">
+					<data type="boolean"/>
+				</element>
+				<element name="time_end">
+					<data type="integer"/>
+				</element>
+			</group>
+		</element>
+	</start>
+
+</grammar>
