@@ -1,52 +1,58 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VerificationAPI.DTO;
+using System.Xml.Serialization;
 using VerificationAPI.Services;
+using VerificationAPI.XmlModels;   // ⬅️ brings in VideoMetadata & Media
 
 namespace VerificationAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]")]          // ->  /api/xmlvalidation/import
     public class XmlValidationController : Controller
     {
-        private readonly XmlConverter _converter;
         private readonly XmlValidationService _validator;
+        private readonly List<VideoMetadata> _store;   // in-memory list
         private readonly ILogger<XmlValidationController> _log;
 
         public XmlValidationController(
-            XmlConverter converter,
             XmlValidationService validator,
+            List<VideoMetadata> store,                 // injected in Program.cs
             ILogger<XmlValidationController> log)
         {
-            _converter = converter;
             _validator = validator;
+            _store = store;
             _log = log;
         }
 
-        // POST /api/video/import
+        // POST /api/xmlvalidation/import
         [HttpPost("import")]
+        [Consumes("application/xml")]                           // Swagger shows xml
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<string>))]
-        public async Task<IActionResult> ImportAsync([FromBody] APIResponse dto)
+        public IActionResult Import([FromBody] string xml)      // ← back again
         {
-            // DTO → XML string
-            var xml = SerializeToXml(dto.ToXmlModel());
+            // 1️⃣  XSD validation
+            var (isValid, errs) = _validator.Validate(xml);
+            if (!isValid) return BadRequest(errs);
 
-            // XSD validation
-            var (ok, errs) = _validator.Validate(xml);
-            if (!ok) return BadRequest(errs);
+            // 2️⃣  Deserialize → VideoMetadata
+            VideoMetadata item;
+            try
+            {
+                var xs = new XmlSerializer(typeof(VideoMetadata));
+                using var sr = new StringReader(xml);
+                item = (VideoMetadata)xs.Deserialize(sr)!;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "Deserialization failed");
+                return BadRequest(new List<string> { $"Deserialization error: {ex.Message}" });
+            }
 
-            // TODO: persist ‘dto’ or XML to DB/file/storage here
+            // 3️⃣  Store in-memory
+            _store.Add(item);
 
-            _log.LogInformation("Video {Id} imported", dto.Id);
-            return Ok("Saved");
+            return Ok("XML validated and video metadata stored.");
         }
 
-        private static string SerializeToXml(object obj)
-        {
-            var ser = new System.Xml.Serialization.XmlSerializer(obj.GetType());
-            using var sw = new StringWriter();
-            ser.Serialize(sw, obj);
-            return sw.ToString();
-        }
     }
 }

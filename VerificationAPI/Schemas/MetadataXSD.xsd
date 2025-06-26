@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="item">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="url"        type="xs:anyURI"/>
+				<xs:element name="source"     type="xs:string"/>
+				<xs:element name="id"         type="xs:string"/>
+				<xs:element name="unique_id"  type="xs:string"/>
+				<xs:element name="author"     type="xs:string"/>
+				<xs:element name="title"      type="xs:string"/>
+				<xs:element name="thumbnail"  type="xs:anyURI"/>
+				<xs:element name="duration"   type="xs:integer"/>
+				<xs:element name="medias">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="media" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="url"        type="xs:anyURI"/>
+										<xs:element name="data_size"  type="xs:integer" minOccurs="0"/>
+										<xs:element name="duration"   type="xs:integer" minOccurs="0"/>
+										<xs:element name="quality"    type="xs:string"/>
+										<xs:element name="extension"  type="xs:string"/>
+										<xs:element name="type"       type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="type"      type="xs:string"/>
+				<xs:element name="error"     type="xs:boolean"/>
+				<xs:element name="time_end"  type="xs:integer"/>
+
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

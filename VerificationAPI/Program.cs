@@ -1,5 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
 using VerificationAPI.Services;
+using VerificationAPI.XmlModels;
 
 namespace VerificationAPI
 {
@@ -11,9 +12,10 @@ namespace VerificationAPI
 
             // Add services to the container.
 
-            var xsdPath = Path.Combine(builder.Environment.ContentRootPath, "Schemas", "Video.xsd");
+            var xsdPath = Path.Combine(builder.Environment.ContentRootPath, "Schemas", "MetadataXSD.xsd");
             builder.Services.AddSingleton(new XmlValidationService(xsdPath));
-            builder.Services.AddSingleton<XmlConverter>();
+            builder.Services.AddSingleton<List<VideoMetadata>>();
+            builder.Services.AddSingleton<List<string>>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -26,9 +28,11 @@ namespace VerificationAPI
                 });
             });
 
-            builder.Services
-                .AddControllers()
-                .AddXmlSerializerFormatters();
+            builder.Services.AddControllers(opt =>
+                            {
+                                opt.InputFormatters.Insert(0, new RawXmlInputFormatter());
+                            })
+                            .AddXmlSerializerFormatters();
 
             var app = builder.Build();
 
