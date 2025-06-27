@@ -22,6 +22,7 @@
   <ItemGroup>
     <PackageReference Include="CoreWCF.Http" Version="1.7.0" />
     <PackageReference Include="CoreWCF.Primitives" Version="1.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.17" />
     <PackageReference Include="RelaxNG" Version="3.2.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="9.0.1" />

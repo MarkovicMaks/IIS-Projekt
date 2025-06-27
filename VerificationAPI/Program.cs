@@ -1,5 +1,8 @@
 ﻿using CoreWCF.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 using VerificationAPI.Services;
 using VerificationAPI.Services.SoapContracts;
 using VerificationAPI.XmlModels;
@@ -48,7 +51,28 @@ namespace VerificationAPI
                             })
                             .AddXmlSerializerFormatters();
 
+            builder.Services
+              .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddJwtBearer(opts => {
+                  opts.TokenValidationParameters = new TokenValidationParameters
+                  {
+                      ValidateIssuer = true,
+                      ValidateAudience = true,
+                      ValidateLifetime = true,
+                      ValidateIssuerSigningKey = true,
+                      ValidIssuer = "tvojIssuer",
+                      ValidAudience = "tvojaPublika",
+                      IssuerSigningKey = new SymmetricSecurityKey(
+                      Encoding.UTF8.GetBytes("superTajniKljuč")
+                    )
+                  };
+              });
+
+
+
             var app = builder.Build();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseCors("AllowVue");
             // Configure the HTTP request pipeline.
 
