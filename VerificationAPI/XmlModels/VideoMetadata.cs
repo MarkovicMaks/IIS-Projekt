@@ -62,7 +62,6 @@ namespace VerificationAPI.XmlModels
         [XmlElement("type")]
         public string Type { get; set; }
 
-        // Only present on some <media> entries:
         [XmlElement("duration")]
         public int? Duration { get; set; }
     }

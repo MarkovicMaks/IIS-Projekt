@@ -29,11 +29,9 @@ namespace VerificationAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<string>))]
         public IActionResult Import([FromBody] string xml)
         {
-            // 1️⃣  RNG validacija
             var (ok, errs) = _rngValidator.Validate(xml);
             if (!ok) return BadRequest(errs);
 
-            // 2️⃣  Deserijalizacija → VideoMetadata
             VideoMetadata item;
             try
             {
@@ -47,7 +45,6 @@ namespace VerificationAPI.Controllers
                 return BadRequest(new List<string> { $"Deserialization error: {ex.Message}" });
             }
 
-            // 3️⃣  Spremi u memoriju (ista lista kao XSD ruta)
             _store.Add(item);
 
             return Ok("XML validated by RNG and stored.");

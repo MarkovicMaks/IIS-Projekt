@@ -11,6 +11,7 @@ namespace VerificationAPI.Services.SoapContracts
         private readonly ILogger<SearchService> _log;
         private const string XmlPath = "Data/videos.xml";
 
+
         public SearchService(List<VideoMetadata> store, ILogger<SearchService> log)
         {
             _store = store;
@@ -19,43 +20,62 @@ namespace VerificationAPI.Services.SoapContracts
 
         public List<VideoMetadata> Search(string term)
         {
+            // 1️⃣  Write the XML snapshot
             Directory.CreateDirectory("Data");
-            var ser = new XmlSerializer(typeof(List<VideoMetadata>));
+            var listSer = new XmlSerializer(typeof(List<VideoMetadata>));
             using (var fw = File.Create(XmlPath))
-            {
-                ser.Serialize(fw, _store);
-            }
+                listSer.Serialize(fw, _store);
 
+            _log.LogInformation("DEBUG: XML snapshot written to {Path}", Path.GetFullPath(XmlPath));
+            _log.LogInformation("DEBUG: First 300 chars = {Dump}",
+                File.ReadAllText(XmlPath).Substring(0, Math.Min(300, (int)new FileInfo(XmlPath).Length)));
+
+            // 2️⃣  Prepare XPath nav + namespace
             var doc = new XPathDocument(XmlPath);
             var nav = doc.CreateNavigator();
+            var ns = new XmlNamespaceManager(nav.NameTable);
+            ns.AddNamespace("d", "http://schemas.datacontract.org/2004/07/VerificationAPI.XmlModels");
 
+            // How many VideoMetadata elements exist at all?
+            var totalNodes = (int)(double)nav.Evaluate("count(//VideoMetadata)");
+            _log.LogInformation("DEBUG: total VideoMetadata nodes = {Total}", totalNodes);
+
+            // ➊ build XPath (no namespace, lower-case title/author)
             var expr = $@"
-            //item[
-                contains(
-                   translate(title,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),
-                   '{Escape(term.ToLower())}'
-                )
-                or
-                contains(
-                   translate(author,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),
-                   '{Escape(term.ToLower())}'
-                )
-            ]";
+                    //VideoMetadata[
+                      contains(
+                         translate(title,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),
+                         '{Escape(term.ToLower())}'
+                      )
+                      or
+                      contains(
+                         translate(author,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),
+                         '{Escape(term.ToLower())}'
+                      )
+                    ]";
+            var nodes = nav.Select(expr);          //  no ns parameter
+            _log.LogInformation("DEBUG: nodes matching expr = {Count}", nodes.Count);
 
-            var nodes = nav.Select(expr);
+            // ➋ deserializer expects <VideoMetadata> in *empty* namespace
+            var xs = new XmlSerializer(
+                typeof(VideoMetadata),
+                new XmlRootAttribute("VideoMetadata") { Namespace = "" });
+
+
             var results = new List<VideoMetadata>();
-            var xs = new XmlSerializer(typeof(VideoMetadata));
+
             foreach (XPathNavigator n in nodes)
             {
-                using var r = n.ReadSubtree();
-                r.MoveToContent();
-                var vm = (VideoMetadata)xs.Deserialize(r)!;
+                using var subtree = n.ReadSubtree();
+                subtree.MoveToContent();
+                var vm = (VideoMetadata)xs.Deserialize(subtree)!;
                 results.Add(vm);
             }
 
             _log.LogInformation("SOAP Search('{Term}') → {Count} hits", term, results.Count);
             return results;
         }
+
 
         private static string Escape(string s) => s.Replace("'", "&apos;");
     }
