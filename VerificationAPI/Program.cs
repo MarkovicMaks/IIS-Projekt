@@ -1,4 +1,5 @@
 ﻿// Program.cs
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using CoreWCF.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -82,9 +83,43 @@ builder.Services
             ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "tvojIssuer",
             ValidAudience = builder.Configuration["Jwt:Audience"] ?? "tvojaPublika",
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "superTajniKljuč")
+                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
             )
+
         };
+
+        opts.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = ctx =>
+            {
+                // 1️⃣  Preuzmi header
+                var raw = ctx.Request.Headers["Authorization"].FirstOrDefault();
+                if (string.IsNullOrWhiteSpace(raw))
+                {
+                    Console.WriteLine("[AUTH] Token header missing or malformed.");
+                    return Task.CompletedTask;
+                }
+
+                // 2️⃣  Odreži “Bearer ” (bez navodnika, upravo ovih 7 znakova)
+                var token = raw.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+                          ? raw[7..] : raw;
+
+                // 3️⃣  Makni navodnike i ne-vidljive razmake (NBSP, CR, LF…)
+                token = token.Trim().Trim('"').Replace("\r", "").Replace("\n", "").Replace("\u00A0", "");
+
+                Console.WriteLine($"[AUTH] ctx.Token = '{token}' dots = {token.Count(c => c == '.')}");
+
+                ctx.Token = token;
+                return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = ctx =>
+            {
+                Console.WriteLine($"[AUTH-FAIL] {ctx.Exception.GetType().Name}: {ctx.Exception.Message}");
+                return Task.CompletedTask;
+            }
+        };
+
+
     });
 builder.Services.AddAuthorization();
 

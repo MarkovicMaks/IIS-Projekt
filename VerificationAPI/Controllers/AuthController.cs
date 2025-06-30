@@ -10,6 +10,7 @@ namespace VerificationAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     public class AuthController : ControllerBase
     {
         // In‐memory demo user
