@@ -10,7 +10,6 @@ namespace VerificationAPI.Controllers
     [Route("api/[controller]")]
     public class MetadataController : ControllerBase
     {
-        // in-memory store of VideoMetadata items
         private static readonly List<VideoMetadata> _store = new();
 
         // GET  /api/metadata

@@ -21,12 +21,10 @@ namespace VerificationAPI.Services
 
             try
             {
-                // Load with line-info so we can report precise positions
                 var doc = XDocument.Parse(
                     xml,
                     LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
 
-                // Walk the whole tree — handler fires for every violation
                 doc.Validate(_schemas,
                     (o, e) =>
                     {
@@ -39,7 +37,6 @@ namespace VerificationAPI.Services
             }
             catch (XmlException ex)
             {
-                // XML isn’t even well-formed — treat as fatal but still report it
                 errors.Add($"Well-formedness error: {ex.Message}");
             }
 

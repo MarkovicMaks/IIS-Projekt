@@ -1,7 +1,7 @@
 ﻿using System.Xml;
 using Commons.Xml.Relaxng;
 
-namespace VerificationAPI.Services          // same root namespace as project
+namespace VerificationAPI.Services          
 {
     public class RngValidationService
     {
@@ -10,8 +10,7 @@ namespace VerificationAPI.Services          // same root namespace as project
         public RngValidationService(string rngPath)
         {
             using var r = XmlReader.Create(rngPath);
-            _pattern = RelaxngPattern.Read(r);  // parse once at startup
-        }
+            _pattern = RelaxngPattern.Read(r);  
 
         public (bool IsValid, List<string> Errors) Validate(string xml)
         {
@@ -23,11 +22,10 @@ namespace VerificationAPI.Services          // same root namespace as project
             rngReader.InvalidNodeFound += (src, msg) =>
             {
                 errors.Add($"RNG: {msg}");
-                return true;                    // continue walking the doc
+                return true;                  
             };
 
-            while (rngReader.Read()) { }        // iterate whole document
-
+            while (rngReader.Read()) { }        
             return (errors.Count == 0, errors);
         }
     }

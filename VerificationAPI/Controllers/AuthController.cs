@@ -13,11 +13,9 @@ namespace VerificationAPI.Controllers
     [Produces("application/json")]
     public class AuthController : ControllerBase
     {
-        // In‐memory demo user
         private static readonly Dictionary<string, string> _users =
             new() { ["demo"] = "password123" };
 
-        // Store refresh tokens → username
         private static readonly Dictionary<string, string> _refreshTokens =
             new(StringComparer.Ordinal);
 
@@ -27,15 +25,12 @@ namespace VerificationAPI.Controllers
         [HttpPost("login")]
         public ActionResult<TokenResponse> Login([FromBody] LoginRequest req)
         {
-            // 1) Validate credentials
             if (!_users.TryGetValue(req.Username, out var pwd) || pwd != req.Password)
                 return Unauthorized("Invalid user or password");
 
-            // 2) Create tokens
             var access = CreateJwtToken(req.Username, minutes: 15);
             var refresh = CreateJwtToken(req.Username, minutes: 60 * 24 * 7);
 
-            // 3) Persist refresh token
             _refreshTokens[refresh] = req.Username;
 
             return Ok(new TokenResponse(access, refresh));

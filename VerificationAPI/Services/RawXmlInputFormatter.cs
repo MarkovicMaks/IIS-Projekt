@@ -7,11 +7,9 @@
     {
         public RawXmlInputFormatter()
         {
-            // Accept both application/xml and text/xml
             SupportedMediaTypes.Add("application/xml");
             SupportedMediaTypes.Add("text/xml");
 
-            // UTF-8 / UTF-16 encodings
             SupportedEncodings.Add(Encoding.UTF8);
             SupportedEncodings.Add(Encoding.Unicode);
         }
