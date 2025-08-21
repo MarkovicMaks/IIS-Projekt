@@ -2,6 +2,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using VerificationAPI.Models;
@@ -35,7 +37,17 @@ namespace VerificationAPI.Controllers
 
             return Ok(new TokenResponse(access, refresh));
         }
-
+        [HttpPost("logout")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public ActionResult Logout([FromBody] RefreshRequest req)
+        {
+            if (req.RefreshToken != null && _refreshTokens.ContainsKey(req.RefreshToken))
+            {
+                _refreshTokens.Remove(req.RefreshToken);
+                return Ok(new { message = "Logged out successfully" });
+            }
+            return Ok(new { message = "Already logged out" });
+        }
         [HttpPost("refresh")]
         public ActionResult<TokenResponse> Refresh([FromBody] RefreshRequest req)
         {

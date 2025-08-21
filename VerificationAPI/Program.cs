@@ -17,12 +17,15 @@ builder.Services.AddSingleton(new XmlValidationService(xsdPath));
 var rngPath = Path.Combine(builder.Environment.ContentRootPath, "Schemas", "MetadataRNG.rng");
 builder.Services.AddSingleton(new RngValidationService(rngPath));
 
-builder.Services.AddSingleton<List<VideoMetadata>>();     
-builder.Services.AddSingleton<SearchService>();          
-builder.Services.AddServiceModelServices();           
+builder.Services.AddSingleton<List<VideoMetadata>>();
+builder.Services.AddSingleton<SearchService>();
+builder.Services.AddServiceModelServices();
 
+// Single AddControllers registration with your formatter
 builder.Services
-    .AddControllers()
+    .AddControllers(opts => {
+        opts.InputFormatters.Insert(0, new RawXmlInputFormatter());
+    })
     .AddXmlSerializerFormatters();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -30,7 +33,7 @@ builder.Services.AddSwaggerGen(c => {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
-        Description = "Enter ‘Bearer {token}’",
+        Description = "Enter 'Bearer {token}'",
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
     });
@@ -60,6 +63,7 @@ builder.Services.AddCors(o =>
         .AllowAnyMethod()
     )
 );
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts => {
@@ -69,15 +73,66 @@ builder.Services
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+            ClockSkew = TimeSpan.Zero,
 
-            ValidIssuer = "VerificationAPI",
-            ValidAudience = "VerificationAPIClient",
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
 
             IssuerSigningKey = new SymmetricSecurityKey(
                  Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
             )
         };
+
+        opts.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = ctx =>
+            {
+                var raw = ctx.Request.Headers["Authorization"].FirstOrDefault();
+                Console.WriteLine($"🔍 RAW HEADER = '{raw ?? "<null>"}'");
+
+                if (!string.IsNullOrWhiteSpace(raw) &&
+                    raw.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                {
+                    var token = raw.Substring("Bearer ".Length).Trim();
+                    Console.WriteLine($"🎫 TOKEN = '{token.Substring(0, Math.Min(30, token.Length))}...' dots={token.Count(c => c == '.')}");
+                    ctx.Token = token;
+                }
+                else
+                {
+                    Console.WriteLine("❌ No valid Bearer token found");
+                }
+
+                return Task.CompletedTask;
+            },
+
+            OnTokenValidated = ctx =>
+            {
+                Console.WriteLine("✅ JWT token validated successfully!");
+                var user = ctx.Principal?.FindFirst("sub")?.Value;
+                Console.WriteLine($"👤 User: {user}");
+                return Task.CompletedTask;
+            },
+
+            OnAuthenticationFailed = ctx =>
+            {
+                Console.WriteLine($"❌ JWT auth failed: {ctx.Exception.GetType().Name}");
+                Console.WriteLine($"❌ Error message: {ctx.Exception.Message}");
+                if (ctx.Exception.InnerException != null)
+                {
+                    Console.WriteLine($"❌ Inner exception: {ctx.Exception.InnerException.Message}");
+                }
+                return Task.CompletedTask;
+            },
+
+            OnChallenge = ctx =>
+            {
+                Console.WriteLine($"🚫 JWT Challenge triggered: {ctx.Error}");
+                Console.WriteLine($"🚫 Error description: {ctx.ErrorDescription}");
+                return Task.CompletedTask;
+            }
+        };
     });
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();

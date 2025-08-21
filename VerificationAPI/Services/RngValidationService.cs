@@ -10,7 +10,8 @@ namespace VerificationAPI.Services
         public RngValidationService(string rngPath)
         {
             using var r = XmlReader.Create(rngPath);
-            _pattern = RelaxngPattern.Read(r);  
+            _pattern = RelaxngPattern.Read(r);
+        }
 
         public (bool IsValid, List<string> Errors) Validate(string xml)
         {
