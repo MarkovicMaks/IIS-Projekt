@@ -1,16 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{4DA54909-7D24-425A-83FE-AC4918A869B5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Models", "Shared.Models\Shared.Models.csproj", "{8280DDF0-3904-4866-8384-0BFB10286398}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrudAuthApi", "CrudAuthApi\CrudAuthApi.csproj", "{8419090A-9EB8-41EE-AB34-D7B9748C8387}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlRpcService", "XmlRpcService\XmlRpcService.csproj", "{319F77FE-8A8E-4DD1-9F00-055549BE07B0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VerificationAPI", "VerificationAPI\VerificationAPI.csproj", "{6EC11136-0B61-483D-812D-2641ADB3AD17}"
 EndProject
 Global
@@ -19,22 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4DA54909-7D24-425A-83FE-AC4918A869B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DA54909-7D24-425A-83FE-AC4918A869B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4DA54909-7D24-425A-83FE-AC4918A869B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4DA54909-7D24-425A-83FE-AC4918A869B5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8280DDF0-3904-4866-8384-0BFB10286398}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8280DDF0-3904-4866-8384-0BFB10286398}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8280DDF0-3904-4866-8384-0BFB10286398}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8280DDF0-3904-4866-8384-0BFB10286398}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8419090A-9EB8-41EE-AB34-D7B9748C8387}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8419090A-9EB8-41EE-AB34-D7B9748C8387}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8419090A-9EB8-41EE-AB34-D7B9748C8387}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8419090A-9EB8-41EE-AB34-D7B9748C8387}.Release|Any CPU.Build.0 = Release|Any CPU
-		{319F77FE-8A8E-4DD1-9F00-055549BE07B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{319F77FE-8A8E-4DD1-9F00-055549BE07B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{319F77FE-8A8E-4DD1-9F00-055549BE07B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{319F77FE-8A8E-4DD1-9F00-055549BE07B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6EC11136-0B61-483D-812D-2641ADB3AD17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6EC11136-0B61-483D-812D-2641ADB3AD17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EC11136-0B61-483D-812D-2641ADB3AD17}.Release|Any CPU.ActiveCfg = Release|Any CPU
