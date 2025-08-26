@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Xml.Serialization;
 using VerificationAPI.Services;
 using VerificationAPI.XmlModels;
@@ -6,7 +7,8 @@ using VerificationAPI.XmlModels;
 namespace VerificationAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]    
+    [Route("api/[controller]")]
+    [Authorize]
     public class RngValidationController : Controller
     {
         private readonly RngValidationService _rngValidator;

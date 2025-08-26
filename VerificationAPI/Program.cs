@@ -56,6 +56,10 @@ namespace VerificationAPI
             builder.Services.AddSingleton<SearchService>();
             builder.Services.AddServiceModelServices();
 
+            builder.Services.AddHttpClient<WeatherService>();
+            builder.Services.AddTransient<WeatherService>();
+            builder.Services.AddScoped<WeatherService>();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
