@@ -23,7 +23,7 @@ namespace VerificationAPI.Controllers
         }
 
         [HttpPost("login")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TokenResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResponse))] 
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Login([FromBody] LoginRequest request)
@@ -42,17 +42,19 @@ namespace VerificationAPI.Controllers
 
             var accessToken = _jwtService.GenerateAccessToken(user.Id.ToString(), user.Username, user.Role);
             var refreshToken = _jwtService.GenerateRefreshToken();
-            var refreshTokenExpiry = DateTime.UtcNow.AddDays(7); // Refresh token valid for 7 days
+            var refreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
             _userService.UpdateRefreshToken(user.Id, refreshToken, refreshTokenExpiry);
 
             _logger.LogInformation("User {Username} logged in successfully", user.Username);
 
-            return Ok(new TokenResponse
+            Response.Headers.Add("X-Refresh-Token", refreshToken);
+
+            return Ok(new LoginResponse
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                Expires = DateTime.UtcNow.AddMinutes(15)
+                Expires = DateTime.UtcNow.AddMinutes(15),
+                Message = "Login successful"
             });
         }
 
@@ -89,18 +91,19 @@ namespace VerificationAPI.Controllers
                 UserService.ToUserResponse(user));
         }
 
-        [HttpPost("refresh")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TokenResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RefreshResponse))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult RefreshToken([FromBody] RefreshTokenRequest request)
+        [HttpPost("refresh")]
+        public IActionResult RefreshToken()
         {
-            if (string.IsNullOrEmpty(request.RefreshToken))
+            if (!Request.Headers.TryGetValue("X-Refresh-Token", out var refreshTokenHeader))
             {
-                return BadRequest("Refresh token is required");
+                return BadRequest("Refresh token header is required");
             }
 
-            var user = _userService.GetUserByRefreshToken(request.RefreshToken);
+            var refreshToken = refreshTokenHeader.ToString();
+            var user = _userService.GetUserByRefreshToken(refreshToken);
             if (user == null)
             {
                 _logger.LogWarning("Invalid refresh token attempted");
@@ -113,12 +116,11 @@ namespace VerificationAPI.Controllers
 
             _userService.UpdateRefreshToken(user.Id, newRefreshToken, refreshTokenExpiry);
 
-            _logger.LogInformation("Token refreshed for user: {Username}", user.Username);
+            Response.Headers.Add("X-Refresh-Token", newRefreshToken);
 
-            return Ok(new TokenResponse
+            return Ok(new RefreshResponse
             {
                 AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken,
                 Expires = DateTime.UtcNow.AddMinutes(15)
             });
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 
 namespace VerificationAPI.XmlModels
@@ -33,7 +34,7 @@ namespace VerificationAPI.XmlModels
 
         [XmlArray("medias")]
         [XmlArrayItem("media")]
-        public List<Media> Medias { get; set; }
+        public List<Media> Medias { get; set; } = new List<Media>();
 
         [XmlElement("type")]
         public string Type { get; set; }
@@ -43,10 +44,19 @@ namespace VerificationAPI.XmlModels
 
         [XmlElement("time_end")]
         public int TimeEnd { get; set; }
+
+        [XmlIgnore]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [XmlIgnore]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 
     public class Media
     {
+        [XmlIgnore]
+        public int Id { get; set; }
+
         [XmlElement("url")]
         public string Url { get; set; }
 

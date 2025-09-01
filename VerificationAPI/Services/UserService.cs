@@ -1,81 +1,76 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using VerificationAPI.Data;
 using VerificationAPI.Models;
 
 namespace VerificationAPI.Services
 {
     public class UserService
     {
-        private readonly List<User> _users;
-        private int _nextId = 1;
+        private readonly VerificationDbContext _context;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService()
+        public UserService(VerificationDbContext context, ILogger<UserService> logger)
         {
-            _users = new List<User>();
-
-            // Add a default admin user for testing
-            _users.Add(new User
-            {
-                Id = _nextId++,
-                Username = "admin",
-                Email = "admin@test.com",
-                PasswordHash = HashPassword("admin123"),
-                Role = "Admin"
-            });
+            _context = context;
+            _logger = logger;
         }
 
-        public User? ValidateUser(string username, string password)
+        public async Task<User?> ValidateUserAsync(string username, string password)
         {
-            var user = _users.FirstOrDefault(u => u.Username == username);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
             if (user == null || !VerifyPassword(password, user.PasswordHash))
                 return null;
 
             return user;
         }
 
-        public User? CreateUser(RegisterRequest request)
+        public async Task<User?> CreateUserAsync(RegisterRequest request)
         {
             // Check if username already exists
-            if (_users.Any(u => u.Username == request.Username))
+            if (await _context.Users.AnyAsync(u => u.Username == request.Username))
                 return null;
 
             // Check if email already exists
-            if (_users.Any(u => u.Email == request.Email))
+            if (await _context.Users.AnyAsync(u => u.Email == request.Email))
                 return null;
 
             var user = new User
             {
-                Id = _nextId++,
                 Username = request.Username,
                 Email = request.Email,
                 PasswordHash = HashPassword(request.Password),
                 Role = "User"
             };
 
-            _users.Add(user);
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Created new user: {Username}", user.Username);
             return user;
         }
 
-        public List<User> GetAllUsers()
+        public async Task<List<User>> GetAllUsersAsync()
         {
-            return _users.ToList();
+            return await _context.Users.ToListAsync();
         }
 
-        public User? GetUserById(int id)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
-            return _users.FirstOrDefault(u => u.Id == id);
+            return await _context.Users.FindAsync(id);
         }
 
-        public User? UpdateUser(int id, UpdateUserRequest request)
+        public async Task<User?> UpdateUserAsync(int id, UpdateUserRequest request)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
+            var user = await _context.Users.FindAsync(id);
             if (user == null)
                 return null;
 
             if (!string.IsNullOrEmpty(request.Username))
             {
                 // Check if new username already exists (excluding current user)
-                if (_users.Any(u => u.Username == request.Username && u.Id != id))
+                if (await _context.Users.AnyAsync(u => u.Username == request.Username && u.Id != id))
                     return null;
                 user.Username = request.Username;
             }
@@ -83,7 +78,7 @@ namespace VerificationAPI.Services
             if (!string.IsNullOrEmpty(request.Email))
             {
                 // Check if new email already exists (excluding current user)
-                if (_users.Any(u => u.Email == request.Email && u.Id != id))
+                if (await _context.Users.AnyAsync(u => u.Email == request.Email && u.Id != id))
                     return null;
                 user.Email = request.Email;
             }
@@ -94,44 +89,64 @@ namespace VerificationAPI.Services
             }
 
             user.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Updated user: {Username}", user.Username);
             return user;
         }
 
-        public bool DeleteUser(int id)
+        public async Task<bool> DeleteUserAsync(int id)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
+            var user = await _context.Users.FindAsync(id);
             if (user == null)
                 return false;
 
-            _users.Remove(user);
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Deleted user: {Username}", user.Username);
             return true;
         }
 
-        public void UpdateRefreshToken(int userId, string refreshToken, DateTime expiry)
+        public async Task UpdateRefreshTokenAsync(int userId, string refreshToken, DateTime expiry)
         {
-            var user = _users.FirstOrDefault(u => u.Id == userId);
+            var user = await _context.Users.FindAsync(userId);
             if (user != null)
             {
                 user.RefreshToken = refreshToken;
                 user.RefreshTokenExpiry = expiry;
+                await _context.SaveChangesAsync();
             }
         }
 
-        public User? GetUserByRefreshToken(string refreshToken)
+        public async Task<User?> GetUserByRefreshTokenAsync(string refreshToken)
         {
-            return _users.FirstOrDefault(u => u.RefreshToken == refreshToken &&
-                                             u.RefreshTokenExpiry > DateTime.UtcNow);
+            return await _context.Users.FirstOrDefaultAsync(u =>
+                u.RefreshToken == refreshToken &&
+                u.RefreshTokenExpiry > DateTime.UtcNow);
         }
 
-        public void RevokeRefreshToken(int userId)
+        public async Task RevokeRefreshTokenAsync(int userId)
         {
-            var user = _users.FirstOrDefault(u => u.Id == userId);
+            var user = await _context.Users.FindAsync(userId);
             if (user != null)
             {
                 user.RefreshToken = null;
                 user.RefreshTokenExpiry = null;
+                await _context.SaveChangesAsync();
             }
         }
+
+        // Keep synchronous versions for backward compatibility
+        public User? ValidateUser(string username, string password) => ValidateUserAsync(username, password).Result;
+        public User? CreateUser(RegisterRequest request) => CreateUserAsync(request).Result;
+        public List<User> GetAllUsers() => GetAllUsersAsync().Result;
+        public User? GetUserById(int id) => GetUserByIdAsync(id).Result;
+        public User? UpdateUser(int id, UpdateUserRequest request) => UpdateUserAsync(id, request).Result;
+        public bool DeleteUser(int id) => DeleteUserAsync(id).Result;
+        public void UpdateRefreshToken(int userId, string refreshToken, DateTime expiry) => UpdateRefreshTokenAsync(userId, refreshToken, expiry).Wait();
+        public User? GetUserByRefreshToken(string refreshToken) => GetUserByRefreshTokenAsync(refreshToken).Result;
+        public void RevokeRefreshToken(int userId) => RevokeRefreshTokenAsync(userId).Wait();
 
         private static string HashPassword(string password)
         {

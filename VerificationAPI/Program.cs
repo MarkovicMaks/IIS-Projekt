@@ -1,5 +1,7 @@
 ﻿using CoreWCF.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using VerificationAPI.Data;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -16,7 +18,6 @@ namespace VerificationAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             var rngPath = Path.Combine(builder.Environment.ContentRootPath, "Schemas", "MetadataRNG.rng");
             builder.Services.AddSingleton(new RngValidationService(rngPath));
             var xsdPath = Path.Combine(builder.Environment.ContentRootPath, "Schemas", "MetadataXSD.xsd");
@@ -24,11 +25,12 @@ namespace VerificationAPI
             builder.Services.AddSingleton<List<VideoMetadata>>();
             builder.Services.AddSingleton<List<string>>();
 
-            // JWT and User services
-            builder.Services.AddSingleton<JwtService>();
-            builder.Services.AddSingleton<UserService>();
+            builder.Services.AddDbContext<VerificationDbContext>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // JWT Authentication
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<JwtService>();
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -52,7 +54,6 @@ namespace VerificationAPI
 
             builder.Services.AddAuthorization();
 
-            //Soap stuff
             builder.Services.AddSingleton<SearchService>();
             builder.Services.AddServiceModelServices();
 
@@ -70,7 +71,6 @@ namespace VerificationAPI
                     Description = "Import TikTok JSON → XML → XSD validate with JWT Authentication"
                 });
 
-                // Add JWT authentication to Swagger
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -99,7 +99,7 @@ namespace VerificationAPI
             builder.Services.AddCors(o =>
             {
                 o.AddPolicy("AllowVue", p => p
-                    .WithOrigins("http://localhost:5173")   // Vite dev server
+                    .WithOrigins("http://localhost:5173")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());
@@ -115,14 +115,12 @@ namespace VerificationAPI
 
             app.UseCors("AllowVue");
 
-            // Configure the HTTP request pipeline.
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Verification API v1");
             });
 
-            // Add authentication and authorization middleware
             app.UseAuthentication();
             app.UseAuthorization();
 
