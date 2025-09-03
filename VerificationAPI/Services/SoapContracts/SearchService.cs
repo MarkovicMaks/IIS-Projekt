@@ -1,28 +1,27 @@
-﻿using System.Xml;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Xml;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+using VerificationAPI.Data;
 using VerificationAPI.XmlModels;
 
 namespace VerificationAPI.Services.SoapContracts
 {
     public class SearchService : ISearchService
     {
-        private readonly List<VideoMetadata> _store;
+        private readonly VerificationDbContext _context;
         private readonly ILogger<SearchService> _log;
         private const string XmlPath = "Data/videos.xml";
 
-        public SearchService(List<VideoMetadata> store, ILogger<SearchService> log)
+        public SearchService(VerificationDbContext context, ILogger<SearchService> log)
         {
-            _store = store;
+            _context = context;
             _log = log;
         }
 
         public List<VideoMetadata> Search(string term)
         {
-            Directory.CreateDirectory("Data");
-            var listSer = new XmlSerializer(typeof(List<VideoMetadata>));
-            using (var fw = File.Create(XmlPath))
-                listSer.Serialize(fw, _store);
+            var allData = _context.VideoMetadata.Include(v => v.Medias).ToList();
 
             _log.LogInformation("DEBUG: XML snapshot written to {Path}", Path.GetFullPath(XmlPath));
             _log.LogInformation("DEBUG: First 300 chars = {Dump}",

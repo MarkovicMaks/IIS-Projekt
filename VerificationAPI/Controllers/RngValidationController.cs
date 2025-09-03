@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Xml.Serialization;
+using VerificationAPI.Data;
 using VerificationAPI.Services;
 using VerificationAPI.XmlModels;
 
@@ -12,16 +14,16 @@ namespace VerificationAPI.Controllers
     public class RngValidationController : Controller
     {
         private readonly RngValidationService _rngValidator;
-        private readonly List<VideoMetadata> _store;
+        private readonly VerificationDbContext _context; 
         private readonly ILogger<RngValidationController> _log;
 
         public RngValidationController(
             RngValidationService rngValidator,
-            List<VideoMetadata> store,
+            VerificationDbContext context, 
             ILogger<RngValidationController> log)
         {
             _rngValidator = rngValidator;
-            _store = store;
+            _context = context;
             _log = log;
         }
 
@@ -29,7 +31,7 @@ namespace VerificationAPI.Controllers
         [Consumes("application/xml")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(List<string>))]
-        public IActionResult Import([FromBody] string xml)
+        public async Task<IActionResult> ImportAsync([FromBody] string xml)
         {
             var (ok, errs) = _rngValidator.Validate(xml);
             if (!ok) return BadRequest(errs);
@@ -47,8 +49,17 @@ namespace VerificationAPI.Controllers
                 return BadRequest(new List<string> { $"Deserialization error: {ex.Message}" });
             }
 
-            _store.Add(item);
+            var existingItem = await _context.VideoMetadata.FindAsync(item.Id);
+            if (existingItem != null)
+            {
+                _log.LogInformation("VideoMetadata with ID {Id} already exists", item.Id);
+                return Ok("XML validated by RNG - item already exists in database");
+            }
 
+            _context.VideoMetadata.Add(item);
+            await _context.SaveChangesAsync();
+
+            _log.LogInformation("VideoMetadata with ID {Id} saved to database", item.Id);
             return Ok("XML validated by RNG and stored.");
         }
     }

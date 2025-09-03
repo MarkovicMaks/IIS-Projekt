@@ -22,8 +22,8 @@ namespace VerificationAPI
             builder.Services.AddSingleton(new RngValidationService(rngPath));
             var xsdPath = Path.Combine(builder.Environment.ContentRootPath, "Schemas", "MetadataXSD.xsd");
             builder.Services.AddSingleton(new XmlValidationService(xsdPath));
-            builder.Services.AddSingleton<List<VideoMetadata>>();
-            builder.Services.AddSingleton<List<string>>();
+            //builder.Services.AddSingleton<List<VideoMetadata>>();
+            //builder.Services.AddSingleton<List<string>>();
 
             builder.Services.AddDbContext<VerificationDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -54,12 +54,11 @@ namespace VerificationAPI
 
             builder.Services.AddAuthorization();
 
-            builder.Services.AddSingleton<SearchService>();
+            builder.Services.AddScoped<SearchService>();
             builder.Services.AddServiceModelServices();
 
-            builder.Services.AddHttpClient<WeatherService>();
-            builder.Services.AddTransient<WeatherService>();
-            builder.Services.AddScoped<WeatherService>();
+            builder.Services.AddHttpClient<WeatherXmlRpcService>();
+            builder.Services.AddScoped<WeatherXmlRpcService>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -139,6 +138,18 @@ namespace VerificationAPI
 
             app.MapControllers();
 
+            app.Map("/xmlrpc/weather", async (HttpContext context, WeatherXmlRpcService xmlRpcService) =>
+            {
+                if (context.Request.Method == "POST")
+                {
+                    await xmlRpcService.ProcessXmlRpcRequest(context);
+                }
+                else
+                {
+                    context.Response.StatusCode = 405; 
+                    await context.Response.WriteAsync("XML-RPC endpoint - POST only");
+                }
+            });
             app.Run();
         }
     }
