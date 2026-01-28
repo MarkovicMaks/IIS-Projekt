@@ -22,8 +22,8 @@ namespace VerificationAPI
             builder.Services.AddSingleton(new RngValidationService(rngPath));
             var xsdPath = Path.Combine(builder.Environment.ContentRootPath, "Schemas", "MetadataXSD.xsd");
             builder.Services.AddSingleton(new XmlValidationService(xsdPath));
-            //builder.Services.AddSingleton<List<VideoMetadata>>();
-            //builder.Services.AddSingleton<List<string>>();
+            builder.Services.AddSingleton<List<VideoMetadata>>();
+            builder.Services.AddSingleton<List<string>>();
 
             builder.Services.AddDbContext<VerificationDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));

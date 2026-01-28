@@ -112,7 +112,7 @@ namespace VerificationAPI.Controllers
 
             var newAccessToken = _jwtService.GenerateAccessToken(user.Id.ToString(), user.Username, user.Role);
             var newRefreshToken = _jwtService.GenerateRefreshToken();
-            var refreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            var refreshTokenExpiry = DateTime.UtcNow.AddHours(8);
 
             _userService.UpdateRefreshToken(user.Id, newRefreshToken, refreshTokenExpiry);
 
